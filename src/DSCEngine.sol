@@ -118,19 +118,19 @@ contract DSCEngine is ReentrancyGuard {
 
     /////////////////////////////////////
     //PRIVATE AND INTERNAL VIEW FUNCTIONS
-    function _getAccountInformation(address user) private returns (uint256 totalDscMinted, uint256 collateralValueInUsd)
+    function _getAccountInformation(address user) private view returns (uint256 totalDscMinted, uint256 collateralValueInUsd)
     {
         totalDscMinted = s_DSCMinted[user];
         collateralValueInUsd = getAccountCollateralValue(user);
     }
 
-    function _healthFactor(address user) private returns(uint256) {
+    function _healthFactor(address user) private view returns(uint256) {
         (uint256 totalDscMinted, uint256 collateralValueInUsd) = _getAccountInformation(user);
         uint256 collateralAdjustedForThreshold = (collateralValueInUsd * LIQUIDATION_THRESHOLD) / LIQUIDATION_PRECISION;
         return (collateralAdjustedForThreshold * PRECISION) / totalDscMinted;
     }
 
-    function _revertIfHealthFactorIsBroken(address user) internal {
+    function _revertIfHealthFactorIsBroken(address user) internal view {
         uint256 userHealthFactor = _healthFactor(user);
         if (userHealthFactor < MIN_HEALTH_FACTOR) {
             revert DSCEngine__BreaksHealthFactor(userHealthFactor);
